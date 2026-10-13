@@ -1,0 +1,44 @@
+[project]
+name = "sparkplug-pipeline"
+version = "0.1.0"
+description = "Sparkplug B telemetry pipeline: simulated edge node, MQTT, ingest service, TimescaleDB, dashboard"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Jack Hall" }]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "paho-mqtt>=2.1",
+    "pg8000>=1.31",
+    "protobuf>=7.35.1,<8",
+    "uvicorn>=0.32",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sparkplug_pipeline"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = [
+    "integration: needs the docker compose stack (run with -m integration)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["src/sparkplug_pipeline/sparkplug/sparkplug_b_pb2.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
