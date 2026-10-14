@@ -17,7 +17,9 @@ OUT = Path(__file__).resolve().parent.parent / "docs" / "dashboard.png"
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:18080/")
-    parser.add_argument("--channel", default=None, help="msedge or chrome to use an installed browser")
+    parser.add_argument(
+        "--channel", default=None, help="msedge or chrome to use an installed browser"
+    )
     args = parser.parse_args()
     with sync_playwright() as p:
         browser = p.chromium.launch(channel=args.channel, headless=True)
