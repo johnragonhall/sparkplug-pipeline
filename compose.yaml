@@ -1,0 +1,81 @@
+# Local demo stack. Credentials are fixed demo values and every port binds to
+# 127.0.0.1 only. Host ports can be changed with the SPB_*_PORT variables.
+name: sparkplug-pipeline
+
+x-db-env: &db-env
+  DB_HOST: db
+  DB_PORT: "5432"
+  DB_NAME: telemetry
+  DB_USER: postgres
+  DB_PASSWORD: sparkplug-demo
+
+services:
+  broker:
+    image: eclipse-mosquitto:2.0.22
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    ports:
+      - "127.0.0.1:${SPB_MQTT_PORT:-18830}:1883"
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/broker/uptime", "-C", "1", "-W", "3"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  db:
+    image: timescale/timescaledb:2.30.2-pg17-oss
+    environment:
+      POSTGRES_DB: telemetry
+      POSTGRES_PASSWORD: sparkplug-demo
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${SPB_DB_PORT:-15433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d telemetry && psql -U postgres -d telemetry -tAc 'SELECT 1 FROM ingest_counters LIMIT 1' >/dev/null"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  ingest:
+    build: .
+    command: ["python", "-m", "sparkplug_pipeline.ingest"]
+    environment:
+      <<: *db-env
+      MQTT_HOST: broker
+      MQTT_PORT: "1883"
+      SPARKPLUG_HOST_ID: ingest-01
+    depends_on:
+      broker: { condition: service_healthy }
+      db: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/ingest-ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  sim:
+    build: .
+    command: ["python", "-m", "sparkplug_pipeline.sim"]
+    environment:
+      MQTT_HOST: broker
+      MQTT_PORT: "1883"
+      SPARKPLUG_HOST_ID: ingest-01
+    depends_on:
+      ingest: { condition: service_healthy }
+    restart: "no"
+
+  dashboard:
+    build: .
+    command: ["python", "-m", "sparkplug_pipeline.dashboard"]
+    environment:
+      <<: *db-env
+    ports:
+      - "127.0.0.1:${SPB_DASHBOARD_PORT:-18080}:8080"
+    depends_on:
+      db: { condition: service_healthy }
+
+volumes:
+  dbdata:
