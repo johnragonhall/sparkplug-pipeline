@@ -18,6 +18,5 @@ def compose_command(name: str) -> list[str]:
         # Docker Engine inside the default WSL distribution, for Windows hosts.
         return ["wsl", "-e", "docker", "compose"]
     raise ValueError(
-        f"SPB_COMPOSE={name!r} is not an allowed compose command; "
-        f"use one of: {', '.join(ALLOWED)}"
+        f"SPB_COMPOSE={name!r} is not an allowed compose command; use one of: {', '.join(ALLOWED)}"
     )
