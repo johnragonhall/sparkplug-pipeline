@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sparkplug Pipeline</title>
+  <!-- uPlot 1.6.32, MIT license, pinned with subresource integrity -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css"
+        integrity="sha384-IfV0B7MIOYuO95kO9G5ySKPz/85zqFNOAs8iy4tkK5zd9izhJAB8b7lHrwYqqmYE"
+        crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js"
+          integrity="sha384-Gx3t0zdBAuQOuvvmaLZj7HKEiSgWTAs+VdtNY7wt19QDPTDQjFIwAuXDj0zeN00c"
+          crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Sparkplug pipeline</h1>
+    <p class="sub">Group <code>plant1</code>, node <code>edge-01</code>. Times are simulated event times (UTC).</p>
+  </header>
+
+  <section class="tiles" id="tiles" aria-label="Ingest totals"></section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>1-minute average by device</h2>
+      <label>Metric
+        <select id="metric"></select>
+      </label>
+    </div>
+    <div id="chart-avg" class="chart"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Samples per minute bucket: on time and late</h2>
+    </div>
+    <p class="note">Late samples were replayed by the edge node after the link outage and were
+      placed in the bucket of their event time. The rollup for that bucket was recomputed.</p>
+    <div id="chart-late" class="chart"></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Dead letters</h2>
+      <table id="dead-letters"><thead><tr><th>Reason</th><th>Topic</th><th>Detail</th></tr></thead><tbody></tbody></table>
+    </section>
+    <section class="panel">
+      <h2>Session and sequence events</h2>
+      <div id="event-counts" class="chips"></div>
+      <h2>Schema versions</h2>
+      <table id="schemas"><thead><tr><th>Device</th><th>Version</th><th>Metrics</th></tr></thead><tbody></tbody></table>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

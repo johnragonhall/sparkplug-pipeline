@@ -1,0 +1,93 @@
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1c2430;
+  --muted: #5c6878;
+  --border: #dde2e8;
+  --accent: #2563eb;
+  --late: #d97706;
+  --ontime: #94a3b8;
+  --s1: #2563eb;
+  --s2: #059669;
+  --s3: #9333ea;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #11151b;
+    --panel: #1a2029;
+    --text: #e5e9ef;
+    --muted: #9aa5b4;
+    --border: #2c3542;
+    --accent: #60a5fa;
+    --late: #f59e0b;
+    --ontime: #64748b;
+    --s1: #60a5fa;
+    --s2: #34d399;
+    --s3: #c084fc;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 24px 16px 48px;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 15px; margin: 0 0 12px; }
+.sub, .note { color: var(--muted); margin: 0 0 16px; }
+code { font-size: 13px; }
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tile {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.tile .label { color: var(--muted); font-size: 12px; }
+.tile .value { font-size: 24px; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.panel-head h2 { margin-bottom: 8px; }
+select { font: inherit; margin-left: 6px; }
+
+.chart { width: 100%; overflow: hidden; }
+.chart .u-legend { color: var(--text); }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; }
+td { overflow-wrap: anywhere; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.chip { border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+.chip b { font-variant-numeric: tabular-nums; }
