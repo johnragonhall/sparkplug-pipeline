@@ -181,7 +181,7 @@ continuous aggregate's invalidation log, but it runs synchronously.
 
 ## Sparkplug B encoding
 
-`proto/sparkplug_b.proto` was written for this project from the payload
+`proto/sparkplug_b.proto` is original to this project and follows the payload
 structure documented in the Sparkplug B v3.0.0 specification. Message and field
 names and field numbers are interface facts taken from the specification text.
 No file from Eclipse Tahu (EPL-2.0) or any other implementation was copied or
