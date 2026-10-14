@@ -5,7 +5,7 @@ description = "Sparkplug B telemetry pipeline: simulated edge node, MQTT, ingest
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-authors = [{ name = "Jack Hall" }]
+authors = [{ name = "John Hall" }]
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
