@@ -6,13 +6,13 @@ The test builds the same scenario plan the simulator runs and derives every
 expectation from it: the rows that must exist, the duplicates, the dead
 letters and the late rows with their buckets. It then checks the database.
 
-Set COMPOSE to the compose command when it is not ``docker compose`` (for
-example ``wsl -d Ubuntu -e docker compose`` on a Windows host whose Docker
-engine runs in WSL). Set SPB_KEEP_STACK=1 to leave the stack running.
+Set SPB_COMPOSE to choose the compose command: ``docker`` (default,
+``docker compose``), ``docker-compose``, or ``wsl`` (``wsl -e docker compose``,
+for a Windows host whose Docker engine runs in the default WSL distribution).
+Set SPB_KEEP_STACK=1 to leave the stack running.
 """
 
 import os
-import shlex
 import subprocess
 import time
 from collections import Counter, defaultdict
@@ -30,11 +30,12 @@ from sparkplug_pipeline.sim.scenario import (
     Publish,
     build_scenario,
 )
+from tests.integration.compose_cmd import compose_command
 
 pytestmark = pytest.mark.integration
 
 ROOT = Path(__file__).resolve().parents[2]
-COMPOSE = shlex.split(os.environ.get("COMPOSE", "docker compose"))
+COMPOSE = compose_command(os.environ.get("SPB_COMPOSE", "docker"))
 DB_PORT = int(os.environ.get("SPB_DB_PORT", "15433"))
 SCENARIO = build_scenario()
 
