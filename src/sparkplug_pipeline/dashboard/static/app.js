@@ -3,6 +3,9 @@
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const fmt = new Intl.NumberFormat("en-US");
 const charts = {};
+const ZWSP = String.fromCharCode(0x200b);
+// Axis ticks land on whole minutes: 1, 2, 5, 10, 15 or 30 minutes apart.
+const MINUTE_STEPS = [60, 120, 300, 600, 900, 1800];
 
 async function getJSON(url) {
   const res = await fetch(url);
@@ -62,7 +65,7 @@ function drawAvg(data) {
       ...devices.map((d, i) => ({ label: d, stroke: colors[i % colors.length], width: 2, spanGaps: false })),
     ],
     axes: [
-      { stroke: css("--muted"), grid: { stroke: css("--border") }, values: (u, ticks) => ticks.map((t) => new Date(t * 1000).toISOString().slice(11, 16)) },
+      { stroke: css("--muted"), grid: { stroke: css("--border") }, incrs: MINUTE_STEPS, values: (u, ticks) => ticks.map((t) => new Date(t * 1000).toISOString().slice(11, 16)) },
       { stroke: css("--muted"), grid: { stroke: css("--border") } },
     ],
     scales: { x: { time: false } },
@@ -82,7 +85,7 @@ function drawLate(data) {
       { label: "Late samples", stroke: css("--late"), fill: css("--late"), paths: bars, points: { show: false } },
     ],
     axes: [
-      { stroke: css("--muted"), grid: { show: false }, values: (u, ticks) => ticks.map((t) => new Date(t * 1000).toISOString().slice(11, 16)) },
+      { stroke: css("--muted"), grid: { show: false }, incrs: MINUTE_STEPS, values: (u, ticks) => ticks.map((t) => new Date(t * 1000).toISOString().slice(11, 16)) },
       { stroke: css("--muted"), grid: { stroke: css("--border") } },
     ],
     scales: { x: { time: false } },
@@ -101,7 +104,8 @@ async function loadSeries(metric) {
 async function main() {
   const [summary, dead] = await Promise.all([getJSON("/api/summary"), getJSON("/api/dead-letters?limit=50")]);
   renderTiles(summary.counters);
-  renderTable("dead-letters", dead, ["reason", "topic", "detail"]);
+  // A zero-width space after each "/" lets long topics wrap at level boundaries.
+  renderTable("dead-letters", dead, ["reason", (r) => r.topic.replaceAll("/", "/" + ZWSP), "detail"]);
   document.getElementById("event-counts").replaceChildren(
     ...summary.events.map((e) => {
       const chip = el("span", { className: "chip" }, `${e.event} `);
